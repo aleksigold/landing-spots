@@ -32,8 +32,17 @@ const BROWSER_HEADERS = {
   Referer: "https://haukkastats.com/",
 };
 
+// Cloudflare blocks requests from GitHub-hosted runner IPs outright, so
+// route through a Cloudflare Worker proxy instead (Worker-to-Cloudflare-site
+// traffic isn't subject to the same IP-reputation block).
+const PROXY_URL = "https://kanaliiga-proxy.aleksi-918.workers.dev";
+
+function proxied(url) {
+  return `${PROXY_URL}?url=${encodeURIComponent(url)}`;
+}
+
 async function fetchHtml(url) {
-  const res = await fetch(url, { headers: BROWSER_HEADERS });
+  const res = await fetch(proxied(url), { headers: BROWSER_HEADERS });
   if (!res.ok) {
     throw new Error(`Failed to fetch ${url}: ${res.status}`);
   }
@@ -119,7 +128,7 @@ async function cacheTeamLogos(teams) {
     const cachePath = path.join(LOGO_CACHE_DIR, fileName);
 
     if (!fs.existsSync(cachePath)) {
-      const res = await fetch(logoUrl, { headers: BROWSER_HEADERS });
+      const res = await fetch(proxied(logoUrl), { headers: BROWSER_HEADERS });
       if (!res.ok) {
         throw new Error(`Failed to fetch logo for ${teamName}: ${res.status}`);
       }
@@ -143,7 +152,7 @@ async function getTelemetry(tournamentId, matchId) {
 
   // Despite the .json.gz name, the server responds with plain JSON (no
   // content-encoding), so a normal fetch + .json() is enough.
-  const res = await fetch(telemetryUrl(tournamentId, matchId), {
+  const res = await fetch(proxied(telemetryUrl(tournamentId, matchId)), {
     headers: BROWSER_HEADERS,
   });
   if (!res.ok) {
