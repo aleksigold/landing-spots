@@ -21,10 +21,19 @@ const MATCHES_URL =
 const STANDINGS_URL =
   "https://haukkastats.com/tournaments/pappaliiga-s12-syksy-2026-2?view=standings&division=5-divisioona";
 
+// A generic "Mozilla/5.0" User-Agent (no browser/OS details) can get flagged
+// as a bot by Cloudflare, so send a full, realistic header set instead.
+const BROWSER_HEADERS = {
+  "User-Agent":
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
+  Accept:
+    "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+  "Accept-Language": "en-US,en;q=0.9",
+  Referer: "https://haukkastats.com/",
+};
+
 async function fetchHtml(url) {
-  const res = await fetch(url, {
-    headers: { "User-Agent": "Mozilla/5.0" },
-  });
+  const res = await fetch(url, { headers: BROWSER_HEADERS });
   if (!res.ok) {
     throw new Error(`Failed to fetch ${url}: ${res.status}`);
   }
@@ -110,7 +119,7 @@ async function cacheTeamLogos(teams) {
     const cachePath = path.join(LOGO_CACHE_DIR, fileName);
 
     if (!fs.existsSync(cachePath)) {
-      const res = await fetch(logoUrl);
+      const res = await fetch(logoUrl, { headers: BROWSER_HEADERS });
       if (!res.ok) {
         throw new Error(`Failed to fetch logo for ${teamName}: ${res.status}`);
       }
@@ -135,7 +144,7 @@ async function getTelemetry(tournamentId, matchId) {
   // Despite the .json.gz name, the server responds with plain JSON (no
   // content-encoding), so a normal fetch + .json() is enough.
   const res = await fetch(telemetryUrl(tournamentId, matchId), {
-    headers: { "User-Agent": "Mozilla/5.0" },
+    headers: BROWSER_HEADERS,
   });
   if (!res.ok) {
     throw new Error(
