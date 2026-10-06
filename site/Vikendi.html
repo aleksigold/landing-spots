@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Vikendi</title>
+<style>
+  body { margin: 0; background: #111; font-family: sans-serif; }
+  .nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 12px 12px 0;
+  }
+  .nav-item {
+    color: #9ab;
+    text-decoration: none;
+    font-size: 13px;
+  }
+  .nav-item:hover { text-decoration: underline; }
+  .nav-item.current { color: white; font-weight: bold; }
+  #status {
+    color: white;
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    padding: 8px 12px;
+    color: white;
+    font-size: 12px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .legend-item.off { opacity: 0.35; }
+  .swatch {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .match-layer.hidden { display: none; }
+  .map {
+    position: relative;
+    width: 1200px;
+    aspect-ratio: 1 / 1;
+    margin: 0 auto;
+    background-size: cover;
+  }
+  .marker {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .marker img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 0 4px black;
+  }
+  .marker span {
+    margin-top: 2px;
+    padding: 1px 4px;
+    font-size: 11px;
+    color: white;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+  <div class="nav" id="nav"></div>
+  <div class="legend" id="legend"></div>
+  <div id="status">Loading…</div>
+  <div class="map" id="map"></div>
+  <script src="app.js"></script>
+  <script>renderMap("DihorOtok_Main");</script>
+</body>
+</html>
